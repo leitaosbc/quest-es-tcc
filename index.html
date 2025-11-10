@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento Olímpico Matemático</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fffde7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #005a9c;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            color: #005a9c;
+            margin-top: 0;
+            font-size: 2.2em;
+        }
+        
+        /* Estilo base para TODOS os botões */
+        .btn {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-azul {
+            background-color: #007bff;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .btn-azul:hover {
+            background-color: #0056b3;
+        }
+        
+        #botao-resposta {
+            color: #005a9c;
+            border: 2px solid #005a9c;
+            background-color: white;
+        }
+        #botao-resposta:hover {
+            background-color: #005a9c;
+            color: white;
+        }
+        
+        /* --- ATUALIZADO ---
+           Contêiner da Mídia (agora empilha verticalmente) */
+        #questao-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-height: 100px;
+            overflow: hidden;
+            background-color: #fafafa;
+            
+            /* Isso empilha a imagem e o vídeo */
+            display: flex;
+            flex-direction: column; /* MAIS IMPORTANTE */
+            justify-content: center;
+            align-items: center;
+            color: #888;
+        }
+
+        #questao-imagem {
+            max-width: 100%;
+            height: auto;
+            display: none; /* Começa escondida */
+            margin-bottom: 15px; /* Espaço entre a imagem e o vídeo */
+        }
+        
+        #questao-video {
+            display: none; /* Começa escondido */
+            width: 100%; /* Ocupa 100% da largura do contêiner */
+            height: auto;
+            aspect-ratio: 16 / 9;
+            border: none;
+        }
+
+        #resposta-container {
+            display: none; /* Começa escondido */
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border-radius: 8px;
+            border: 1px dashed #007bff;
+        }
+
+        #aviso-resposta {
+            font-weight: bold;
+            font-style: italic;
+            color: #d9534f;
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+        }
+
+        .bottom-button-container {
+            margin-top: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <h1>Treinamento Olímpico Matemático: Em busca de campeões</h1>
+        
+        <button id="gerar-questao-top" class="btn btn-azul">Gerar Nova Questão</button>
+
+        <div id="questao-container">
+            <span id="mensagem-inicial">Sua questão aparecerá aqui.</span>
+            
+            <img id="questao-imagem" alt="Questão Olímpica">
+            <iframe id="questao-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div id="resposta-container">
+            <p id="aviso-resposta">TENTE VOCÊ, ANTES DE VER A RESPOSTA.</p>
+            <button id="botao-resposta" class="btn">Resposta</button>
+        </div>
+
+        <div class="bottom-button-container">
+            <button id="gerar-questao-bottom" class="btn btn-azul">Gerar Nova Questão</button>
+        </div>
+        
+    </div>
+
+    <script>
+        // --- INÍCIO DA CONFIGURAÇÃO ---
+        const listaDeQuestoes = [
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q01_1F.png",
+                video: "https://www.youtube.com/watch?v=c7MVDm89oyI"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q02_1F.png",
+                video: "https://www.youtube.com/watch?v=v03HpfRWQLg"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q03_1F.png",
+                video: "https://www.youtube.com/watch?v=rztEdfeqJAY"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q04_1F.png",
+                video: "https://www.youtube.com/watch?v=nL9FMkgW6ME"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q05_1F.png",
+                video: "https://www.youtube.com/watch?v=9ZYxwfqslPU"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q06_1F.png",
+                video: "https://www.youtube.com/watch?v=UDJRM08UzPQ"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q07_1F.png",
+                video: "https://www.youtube.com/watch?v=lQtxMid4ZbM"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q08_1F.png",
+                video: "https://www.youtube.com/watch?v=tB3k5ZQOuxI"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q09_1F.png",
+                video: "https://www.youtube.com/watch?v=0zK5lZdy5Hk"
+            },
+            {
+                imagem: "https://raw.githubusercontent.com/leitaosbc/quest-es-tcc/main/N1_2005_Q10_1F.png",
+                video: "https://www.youtube.com/watch?v=R-i-FVxkW_w"
+            }
+        ];
+        // --- FIM DA CONFIGURAÇÃO ---
+
+        // 2. PEGANDO OS ELEMENTOS
+        const botaoGerarTop = document.getElementById("gerar-questao-top");
+        const botaoGerarBottom = document.getElementById("gerar-questao-bottom");
+        const botaoResposta = document.getElementById("botao-resposta");
+        
+        const elementoImagem = document.getElementById("questao-imagem");
+        const elementoVideo = document.getElementById("questao-video");
+        
+        const mensagemInicial = document.getElementById("mensagem-inicial");
+        const respostaContainer = document.getElementById("resposta-container");
+        
+        let videoLinkAtual = "";
+        let respostaVisivel = false; // Controla se o vídeo está visível
+
+        // 3. FUNÇÃO PARA TRANSFORMAR O LINK DO YOUTUBE
+        function transformarLinkYouTube(url) {
+            try {
+                const urlObj = new URL(url);
+                const videoId = urlObj.searchParams.get("v"); 
+                if (videoId) {
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+                return "";
+            } catch (error) {
+                console.error("Erro ao transformar link do YouTube:", error);
+                return "";
+            }
+        }
+
+        // 4. FUNÇÃO PARA MOSTRAR A QUESTÃO
+        function mostrarNovaQuestao() {
+            // Reseta a interface
+            mensagemInicial.style.display = "none";
+            elementoVideo.style.display = "none"; 
+            elementoVideo.src = ""; // Para o vídeo
+            
+            // Mostra a imagem
+            elementoImagem.style.display = "block";
+
+            // Sorteia a questão
+            const indiceAleatorio = Math.floor(Math.random() * listaDeQuestoes.length);
+            const questaoSorteada = listaDeQuestoes[indiceAleatorio];
+            
+            elementoImagem.src = questaoSorteada.imagem;
+            videoLinkAtual = questaoSorteada.video;
+            
+            // Mostra o bloco da resposta e reseta o estado
+            respostaContainer.style.display = "block";
+            respostaVisivel = false;
+        }
+        
+        // 5. FUNÇÃO MOSTRAR A RESPOSTA
+        function mostrarResposta() {
+            // Se a resposta já estiver visível, não faz nada
+            if (respostaVisivel || !videoLinkAtual) return;
+
+            const embedLink = transformarLinkYouTube(videoLinkAtual);
+
+            if (embedLink) {
+                // --- ATUALIZADO ---
+                // Agora o vídeo apenas aparece, sem esconder a imagem
+                elementoVideo.src = embedLink;
+                elementoVideo.style.display = "block";
+                respostaVisivel = true; // Marca que o vídeo está visível
+            } else {
+                alert("Não foi possível carregar o vídeo de resposta.");
+            }
+        }
+
+        // 6. DIZENDO AOS BOTÕES O QUE FAZER
+        botaoGerarTop.addEventListener("click", mostrarNovaQuestao);
+        botaoGerarBottom.addEventListener("click", mostrarNovaQuestao);
+        botaoResposta.addEventListener("click", mostrarResposta);
+
+    </script>
+</body>
+</html>
